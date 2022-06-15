@@ -8,22 +8,25 @@ router.get("/", (req, res) => {
 });
 
 //------------------------------------------------------------------------------------------------------------
-app.get("/inicio-productos", async (req, res) => {
+
+app.post("/inicio-productos", async (req, res) => {
   const { inicio } = req.body
   console.log('Recibí inicio: ', inicio);
   try {
-    const products = await Producto.find({})
+    const products = await Producto.find({ inicio })
+    console.log('Regresé inicio: ', products);
     res.json({products})
   } catch (error) {
       res.status(500).json({ msg: 'Hubo un error obteniendo los datos' })
   }
 })
 
-app.get("/obtener-productos", async (req, res) => {
+app.post("/obtener-productos", async (req, res) => {
   const { id } = req.body
   console.log('Recibí id: ', id);
   try {
     const products = id ? await Producto.find({ _id : id}) : await Producto.find({})
+    console.log('Regresé obtener: ', products);
     res.json({products})
   } catch (error) {
       res.status(500).json({ msg: 'Hubo un error obteniendo los datos' })

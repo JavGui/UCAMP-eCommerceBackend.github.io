@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express.Router()
-const Users = require("../models/usuario");
+const Usuario = require('../models/usuario');
 const router = express.Router();
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -31,9 +31,10 @@ app.post("/crear-usuario", async (req, res) => {
   try{
     const salt = await bcryptjs.genSalt(10)
     const hashedPassword = await bcryptjs.hash(password, salt)
+    console.log('HashedPassword: ', hashedPassword);
 
-    const respuestaDB = await Usuario.create({ nombre, apellido, email, password: hashedPassword })
-    console.log('Crear Usuario: ', respuestaDB.password);
+    const usuarioAgregado = await Usuario.create({ nombre, apellido, email, password: hashedPassword })
+    console.log('Crear Usuario: ', usuarioAgregado);
 
     const payload = { user: { id: respuestaDB._id}}
 

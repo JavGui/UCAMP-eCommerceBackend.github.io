@@ -10,7 +10,7 @@ router.get("/", (req, res) => {
 
 //--------------------------------------------------------------------------------------------------------------
 
-app.post("/iniciar-sesion", async(req, res) => {
+app.get("/iniciar-sesion", async(req, res) => {
   const { email, password } = req.body
 
   try {

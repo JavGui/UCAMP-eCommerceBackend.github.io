@@ -17,9 +17,6 @@ app.use("/", require("./src/routes/products.routes"));
 app.use("/", require("./src/routes/users.routes"));
 app.use("/", require("./src/routes/auth.routes"));
 
-// app.use("/api/users", require("./src/routes/users.routes"));
-// app.use("/api/auth", require("./src/routes/auth.routes"));
-
 app.get("/", (req, res) => res.send("UCAMP API"))
 
 app.listen(process.env.PORT, () => {
