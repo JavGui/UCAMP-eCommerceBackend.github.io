@@ -1,7 +1,9 @@
 const express = require('express')
 const app = express.Router()
-const Users = require("../models/usuario");
+const Usuario = require("../models/usuario");
 const router = express.Router();
+const bcryptjs = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 router.get("/", (req, res) => {
   res.send("Tu endpoint esta corriendo correctamente")
@@ -10,18 +12,25 @@ router.get("/", (req, res) => {
 
 //--------------------------------------------------------------------------------------------------------------
 
-app.get("/iniciar-sesion", async(req, res) => {
+app.post("/iniciar-sesion", async(req, res) => {
   const { email, password } = req.body
-
+    console.log('Recibí Login: ', email, password );
   try {
-      let foundUser = await Usuario.findOne({ email })
-      if(!foundUser){
-          return res.status(400).json({msg: "El usuario no existe"})
-      }      
-      const passCorrecto = await bcryptjs.compare(password, foundUser.password)
-            if(!passCorrecto){
-          return await res.status(400).json({msg: "Password incorrecto"})
+
+      let foundUser = await Usuario.find({ email })
+
+      if(foundUser.length === 0){
+        console.log('entré a usuario no existe')
+        return await res.status(400).json({msg: "El usuario no existe"})
+      } 
+
+      const passCorrecto = await bcryptjs.compare(password, foundUser[0].password)
+
+      if(!passCorrecto){
+        console.log('entré a password incorrecta');
+        return await res.status(400).json({msg: "Password incorrecto"})
       }
+      
       const payload = { user: { id: foundUser.id }}
 
       jwt.sign(
@@ -33,12 +42,10 @@ app.get("/iniciar-sesion", async(req, res) => {
                 if(error) throw error;
                     res.json({token})
             }
-        )
-      
+        )      
     } catch (error) {
-        res.json({
-            msg: "Hubo un error",
-            error})
+        console.log('Entré al catch de inicio de sesión');
+        res.json({ msg: "Hubo un error", error})
     }
 })
 

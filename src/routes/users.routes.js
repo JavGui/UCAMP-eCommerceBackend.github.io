@@ -9,14 +9,12 @@ router.get("/", (req, res) => {
   res.send("Tu endpoint esta corriendo correctamente");
 });
 
-//--------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
 
 app.get("/obtener-usuarios", async (req, res) => {
   const { id } = req.body
-  console.log('Recibí GET id: ', id);
   try {
     const users = id ? await Usuario.find({ _id : id}) : await Usuario.find({})
-    console.log('Regresé GET: ', users);
     res.json({users})
   } catch (error) {
       res.status(500).json({ msg: 'Hubo un error obteniendo los datos' })
@@ -26,22 +24,29 @@ app.get("/obtener-usuarios", async (req, res) => {
 //--------------------------------------------------------------------------------------------------------------
 
 app.post("/crear-usuario", async (req, res) => {
-  const { nombre, apellido, email, password } = req.body
-  console.log('Recibí POST: ',nombre, apellido, email, password );
+  const { nombre, email, password } = req.body
+
   try{
+
+    let foundEmail = await Usuario.find({ email })
+
+    if(foundEmail.length > 0){
+       return res.status(400).json({msg: "Esta cuenta de correo ya existe"})
+    }      
+
     const salt = await bcryptjs.genSalt(10)
+    
     const hashedPassword = await bcryptjs.hash(password, salt)
-    console.log('HashedPassword: ', hashedPassword);
 
-    const usuarioAgregado = await Usuario.create({ nombre, apellido, email, password: hashedPassword })
-    console.log('Crear Usuario: ', usuarioAgregado);
+    const usuarioAgregado = await Usuario.create({ nombre, email, password: hashedPassword })
 
-    const payload = { user: { id: respuestaDB._id}}
+    const payload = { user: { id: usuarioAgregado._id}}
 
     jwt.sign( 
-      payload, process.env.SECRET, { expisresIn: 360000 },
+      payload, process.env.SECRET, { expiresIn: 360000 },
       (error, token) => {
         if (error) throw error
+          console.log('token: ', token);
           res.json({ token })
       }
     )
@@ -53,9 +58,9 @@ app.post("/crear-usuario", async (req, res) => {
 //--------------------------------------------------------------------------------------------------------------
 
 app.put("/actualizar-usuario", async (req, res) => {
-  const {id, nombre, apellido, email, password } = req.body;
+  const {id, nombre, email, password } = req.body;
   try {
-    const users = await Usuario.findByIdAndUpdate( id, { nombre, apellido, email, password }, { new: true });
+    const users = await Usuario.findByIdAndUpdate( id, { nombre, email, password }, { new: true });
     console.log('Regresé PUT; ', users);
     res.json(users);    
   } catch (error) {
