@@ -14,7 +14,7 @@ router.get("/", (req, res) => {
 app.get("/obtener-usuarios", async (req, res) => {
   const { id } = req.body
   try {
-    const users = id ? await Usuario.find({ _id : id}) : await Usuario.find({})
+    const users = await Usuario.find({ _id : id})
     res.json({users})
   } catch (error) {
       res.status(500).json({ msg: 'Hubo un error obteniendo los datos' })
@@ -25,21 +25,15 @@ app.get("/obtener-usuarios", async (req, res) => {
 
 app.post("/crear-usuario", async (req, res) => {
   const { nombre, email, password } = req.body
-
   try{
-
     let foundEmail = await Usuario.find({ email })
-
     if(foundEmail.length > 0){
        return res.status(400).json({msg: "Esta cuenta de correo ya existe"})
     }      
 
-    const salt = await bcryptjs.genSalt(10)
-    
+    const salt = await bcryptjs.genSalt(10)    
     const hashedPassword = await bcryptjs.hash(password, salt)
-
     const usuarioAgregado = await Usuario.create({ nombre, email, password: hashedPassword })
-
     const payload = { user: { id: usuarioAgregado._id}}
 
     jwt.sign( 

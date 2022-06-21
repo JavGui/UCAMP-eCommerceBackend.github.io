@@ -40,6 +40,7 @@ app.post("/iniciar-sesion", async(req, res) => {
                 expiresIn: 3600000
             }, (error, token) => {
                 if(error) throw error;
+                    console.log("token: ", token)
                     res.json({token})
             }
         )      
@@ -52,15 +53,34 @@ app.post("/iniciar-sesion", async(req, res) => {
 //--------------------------------------------------------------------------------------------------------------
 
 app.get("/verificar-usuario", async (req, res) => {
-
+  console.log('entré a verificar usuario');
+  // console.log('req.user.id: ', req.users.id );
   try {
-      const usuario = await Usuario.findById(req.user.id).select('-password')
-      res.json({usuario})
+    console.log('entré al try de verificar: ');
+    // const usuario = await Usuario.findById(req.users.id).select('-password')
+    // console.log('verifica usuario: ', usuario);
+    // res.json({usuario})
   } catch (error) {
+    console.log('entré al catch de verificar: ', error);
       res.status(500).json({
           msg: "Hubo un error",
           error
       })
   }
 })
+
+//------------------------------------------------------------------------------------------------------------
+
+app.get("/confirmar-usuario", async (req, res) => {
+  const { email } = req.body
+  console.log('recibí confirmar: ', email);
+  try {
+    const users = await Usuario.find({ email })
+    console.log('res users: ', users);
+    res.json({users})
+  } catch (error) {
+      res.status(500).json({ msg: 'Hubo un error obteniendo los datos' })
+  }
+})
+
 module.exports = app;
