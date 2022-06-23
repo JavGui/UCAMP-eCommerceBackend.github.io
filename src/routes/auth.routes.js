@@ -18,6 +18,8 @@ app.post("/iniciar-sesion", async(req, res) => {
   try {
 
       let foundUser = await Usuario.find({ email })
+      console.log('foundUser ', foundUser);
+      console.log('foundUser.length: ', foundUser.length);
 
       if(foundUser.length === 0){
         console.log('entré a usuario no existe')
@@ -46,7 +48,8 @@ app.post("/iniciar-sesion", async(req, res) => {
         )      
     } catch (error) {
         console.log('Entré al catch de inicio de sesión');
-        res.json({ msg: "Hubo un error", error})
+        console.log("Error", error)
+        res.status(500).json({ msg: "Hubo un error", error})
     }
 })
 

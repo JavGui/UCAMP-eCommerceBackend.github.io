@@ -25,8 +25,12 @@ app.get("/obtener-usuarios", async (req, res) => {
 
 app.post("/crear-usuario", async (req, res) => {
   const { nombre, email, password } = req.body
+  console.log('recibi crea: ', nombre, email, password);
   try{
     let foundEmail = await Usuario.find({ email })
+    console.log('found Email: ', foundEmail);
+    console.log('found length: ', foundEmail.length);
+
     if(foundEmail.length > 0){
        return res.status(400).json({msg: "Esta cuenta de correo ya existe"})
     }      
