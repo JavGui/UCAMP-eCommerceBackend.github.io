@@ -4,6 +4,7 @@ const Usuario = require("../models/usuario");
 const router = express.Router();
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const auth = require('../middleware/authorization')
 
 router.get("/", (req, res) => {
   res.send("Tu endpoint esta corriendo correctamente")
@@ -15,7 +16,8 @@ router.get("/", (req, res) => {
 app.post("/iniciar-sesion", async(req, res) => {
   const { email, password } = req.body
   try {
-      let foundUser = await Usuario.find({ email })
+      let foundUser = await Usuario.find({ email }) // poner el select -password
+      console.log('founduser: ', foundUser);
 
       if(foundUser.length === 0){
         return await res.status(400).json({msg: "El usuario no existe"})
@@ -46,7 +48,7 @@ app.post("/iniciar-sesion", async(req, res) => {
 
 //--------------------------------------------------------------------------------------------------------------
 
-app.get("/verificar-usuario", async (req, res) => {
+app.get("/verificar-usuario", auth, async (req, res) => {
   try {
     const usuario = await Usuario.findById(req.users.id).select('-password')
     res.json({usuario})

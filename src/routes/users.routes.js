@@ -31,7 +31,7 @@ app.post("/crear-usuario", async (req, res) => {
     if(foundEmail.length > 0){
        return res.status(400).json({msg: "Esta cuenta de correo ya existe"})
     }      
-
+    
     const salt = await bcryptjs.genSalt(10)    
     const hashedPassword = await bcryptjs.hash(password, salt)
     const usuarioAgregado = await Usuario.create({ nombre, email, password: hashedPassword })
